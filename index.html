@@ -1,1 +1,499 @@
-nothing here yet
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Dashboard</title>
+  <style>
+    :root {
+      --bg: #0f1220;
+      --bg2: #151a2e;
+      --panel: #1b2140;
+      --panel2: #202746;
+      --text: #f4f7ff;
+      --muted: #aab2d5;
+      --accent: #6c8cff;
+      --accent2: #7c5cff;
+      --border: rgba(255,255,255,0.08);
+      --shadow: 0 12px 30px rgba(0,0,0,0.35);
+    }
+
+    [data-theme="light"] {
+      --bg: #eef2ff;
+      --bg2: #f7f8ff;
+      --panel: #ffffff;
+      --panel2: #f4f6ff;
+      --text: #172033;
+      --muted: #5e6780;
+      --accent: #4f73ff;
+      --accent2: #7b5cff;
+      --border: rgba(0,0,0,0.08);
+      --shadow: 0 12px 30px rgba(44, 58, 92, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: linear-gradient(180deg, var(--bg), var(--bg2));
+      color: var(--text);
+      min-height: 100%;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      background: rgba(255,255,255,0.03);
+      border-right: 1px solid var(--border);
+      padding: 22px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      padding: 10px 12px 18px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 1.35rem;
+    }
+
+    .brand p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav button {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid transparent;
+      padding: 12px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .nav button:hover,
+    .nav button.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    .main {
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+
+    .search {
+      flex: 1;
+      min-width: 250px;
+      max-width: 600px;
+      position: relative;
+    }
+
+    .search input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      outline: none;
+      box-shadow: var(--shadow);
+    }
+
+    .pill {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .section {
+      display: none;
+      animation: fade 0.2s ease;
+    }
+
+    .section.active { display: block; }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .icon {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      font-size: 1.1rem;
+      flex: 0 0 auto;
+    }
+
+    h2, h3 { margin: 0; }
+    p { color: var(--muted); line-height: 1.5; }
+
+    .embed {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: 0;
+      border-radius: 14px;
+      margin-top: 12px;
+      background: #000;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .announcement {
+      padding: 14px 16px;
+      border-left: 4px solid var(--accent);
+      background: rgba(108,140,255,0.08);
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .setting {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .setting:last-child { border-bottom: 0; }
+
+    .switch {
+      position: relative;
+      width: 52px;
+      height: 30px;
+      display: inline-block;
+    }
+
+    .switch input { opacity: 0; width: 0; height: 0; }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+      cursor: pointer;
+      background: #3a4157;
+      border-radius: 999px;
+      transition: .2s;
+    }
+
+    .slider:before {
+      content: "";
+      position: absolute;
+      height: 22px;
+      width: 22px;
+      left: 4px;
+      top: 4px;
+      background: white;
+      border-radius: 50%;
+      transition: .2s;
+    }
+
+    input:checked + .slider {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+
+    .hide { display: none !important; }
+
+    .mobile-toggle {
+      display: none;
+      width: 100%;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 14px;
+      margin-bottom: 14px;
+    }
+
+    @media (max-width: 860px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+      }
+      .mobile-toggle { display: block; }
+      .nav { display: none; }
+      .nav.open { display: flex; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>My Dashboard</h1>
+        <p>Games • Proxies • Streams • News • Settings</p>
+      </div>
+
+      <button class="mobile-toggle" onclick="toggleMenu()">Menu</button>
+
+      <nav class="nav" id="nav">
+        <button class="tab active" onclick="showSection('games', this)">🎮 Games</button>
+        <button class="tab" onclick="showSection('proxies', this)">🛡️ Proxies</button>
+        <button class="tab" onclick="showSection('streams', this)">📺 Streams</button>
+        <button class="tab" onclick="showSection('announcements', this)">📢 Announcements</button>
+        <button class="tab" onclick="showSection('settings', this)">⚙️ Settings</button>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="search">
+          <input type="text" id="searchBox" placeholder="Search games, streams, or announcements..." oninput="searchContent()">
+        </div>
+
+        <div class="pill">
+          <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+            <span>🌙 Dark Mode</span>
+            <label class="switch">
+              <input type="checkbox" checked onchange="toggleTheme(this.checked)">
+              <span class="slider"></span>
+            </label>
+          </label>
+        </div>
+      </div>
+
+      <!-- GAMES -->
+      <section id="games" class="section active">
+        <div class="card">
+          <div class="card-header">
+            <div class="icon">🎮</div>
+            <div>
+              <h2>Games</h2>
+              <p>Embedded games and quick links.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:16px;">
+          <div class="card game-item">
+            <h3>Game 1</h3>
+            <p>Replace this with your game embed.</p>
+            <iframe class="embed" src="https://example.com" title="Game 1"></iframe>
+          </div>
+
+          <div class="card game-item">
+            <h3>Game 2</h3>
+            <p>Replace this with your game embed.</p>
+            <iframe class="embed" src="https://example.com" title="Game 2"></iframe>
+          </div>
+
+          <div class="card game-item">
+            <h3>Game 3</h3>
+            <p>Replace this with your game embed.</p>
+            <iframe class="embed" src="https://example.com" title="Game 3"></iframe>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROXIES -->
+      <section id="proxies" class="section">
+        <div class="card">
+          <div class="card-header">
+            <div class="icon">🛡️</div>
+            <div>
+              <h2>Proxies</h2>
+              <p>Add your proxy links here.</p>
+            </div>
+          </div>
+          <ul>
+            <li><a href="#">Proxy Link 1</a></li>
+            <li><a href="#">Proxy Link 2</a></li>
+            <li><a href="#">Proxy Link 3</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- STREAMS -->
+      <section id="streams" class="section">
+        <div class="card">
+          <div class="card-header">
+            <div class="icon">📺</div>
+            <div>
+              <h2>Streams</h2>
+              <p>Embedded streams and videos.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:16px;">
+          <div class="card stream-item">
+            <h3>Stream 1</h3>
+            <p>Embedded video player.</p>
+            <iframe class="embed" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Stream 1" allowfullscreen></iframe>
+          </div>
+
+          <div class="card stream-item">
+            <h3>Stream 2</h3>
+            <p>Embedded video player.</p>
+            <iframe class="embed" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Stream 2" allowfullscreen></iframe>
+          </div>
+        </div>
+      </section>
+
+      <!-- ANNOUNCEMENTS -->
+      <section id="announcements" class="section">
+        <div class="card">
+          <div class="card-header">
+            <div class="icon">📢</div>
+            <div>
+              <h2>Announcements</h2>
+              <p>Latest updates and notices.</p>
+            </div>
+          </div>
+
+          <div class="announcement news-item">
+            <strong>Update:</strong> New dashboard design added.
+          </div>
+          <div class="announcement news-item">
+            <strong>Notice:</strong> You can edit all links and embeds.
+          </div>
+          <div class="announcement news-item">
+            <strong>Coming Soon:</strong> More games, streams, and features.
+          </div>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section id="settings" class="section">
+        <div class="card">
+          <div class="card-header">
+            <div class="icon">⚙️</div>
+            <div>
+              <h2>Settings</h2>
+              <p>Customize your dashboard.</p>
+            </div>
+          </div>
+
+          <div class="setting">
+            <div>
+              <strong>Dark / Light Mode</strong>
+              <p>Switch the theme of the site.</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" checked onchange="toggleTheme(this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting">
+            <div>
+              <strong>Animations</strong>
+              <p>Smooth transitions and fades.</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting">
+            <div>
+              <strong>Compact Mode</strong>
+              <p>Make cards smaller and tighter.</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" onchange="document.body.classList.toggle('compact', this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    function showSection(id, btn) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      btn.classList.add('active');
+      if (window.innerWidth <= 860) document.getElementById('nav').classList.remove('open');
+      searchContent();
+    }
+
+    function toggleTheme(isDark) {
+      document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    }
+
+    function toggleMenu() {
+      document.getElementById('nav').classList.toggle('open');
+    }
+
+    function searchContent() {
+      const q = document.getElementById('searchBox').value.toLowerCase().trim();
+      const items = document.querySelectorAll('.game-item, .stream-item, .news-item, .card li, .card .announcement');
+
+      items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.classList.toggle('hide', q && !text.includes(q));
+      });
+    }
+  </script>
+
+</body>
+</html>
