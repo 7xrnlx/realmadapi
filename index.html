@@ -3,497 +3,512 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Dashboard</title>
+  <title>Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a2d9d6f4f0.js" crossorigin="anonymous"></script>
   <style>
     :root {
-      --bg: #0f1220;
-      --bg2: #151a2e;
-      --panel: #1b2140;
-      --panel2: #202746;
-      --text: #f4f7ff;
-      --muted: #aab2d5;
-      --accent: #6c8cff;
-      --accent2: #7c5cff;
-      --border: rgba(255,255,255,0.08);
-      --shadow: 0 12px 30px rgba(0,0,0,0.35);
+      --bg: #071a0f;
+      --bg2: #102b16;
+      --text: #f5f8ff;
+      --muted: rgba(245, 248, 255, 0.7);
+      --accent: #c8ff3d;
+      --accent2: #35e07a;
+      --accent3: #ffdd57;
+      --glass: rgba(255,255,255,0.10);
+      --border: rgba(255,255,255,0.16);
+      --shadow: 0 22px 60px rgba(0,0,0,0.35);
+      --blur: 22px;
     }
 
     [data-theme="light"] {
-      --bg: #eef2ff;
-      --bg2: #f7f8ff;
-      --panel: #ffffff;
-      --panel2: #f4f6ff;
-      --text: #172033;
-      --muted: #5e6780;
-      --accent: #4f73ff;
-      --accent2: #7b5cff;
-      --border: rgba(0,0,0,0.08);
-      --shadow: 0 12px 30px rgba(44, 58, 92, 0.14);
+      --bg: #eef7e9;
+      --bg2: #d9f0c8;
+      --text: #101828;
+      --muted: rgba(16, 24, 40, 0.7);
+      --glass: rgba(255,255,255,0.62);
+      --border: rgba(255,255,255,0.8);
+      --shadow: 0 18px 45px rgba(20,30,60,0.12);
+    }
+
+    [data-theme="neon"] {
+      --bg: #050d08;
+      --bg2: #0a1f12;
+      --text: #f8fbff;
+      --muted: rgba(248, 251, 255, 0.72);
+      --accent: #c8ff3d;
+      --accent2: #35e07a;
+      --accent3: #ffdd57;
+      --glass: rgba(255,255,255,0.07);
+      --border: rgba(200,255,61,0.18);
     }
 
     * { box-sizing: border-box; }
-    html, body {
+    body {
       margin: 0;
-      font-family: Inter, Arial, sans-serif;
-      background: linear-gradient(180deg, var(--bg), var(--bg2));
+      font-family: 'Inter', system-ui, sans-serif;
       color: var(--text);
-      min-height: 100%;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(200,255,61,0.25), transparent 24%),
+        radial-gradient(circle at 85% 10%, rgba(53,224,122,0.20), transparent 20%),
+        linear-gradient(180deg, var(--bg2), var(--bg));
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    .app {
+    .bg-orbs {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(30px);
+      animation: float 14s ease-in-out infinite alternate;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(200,255,61,0.22), transparent 24%),
+        radial-gradient(circle at 80% 20%, rgba(53,224,122,0.18), transparent 20%),
+        radial-gradient(circle at 70% 80%, rgba(255,221,87,0.14), transparent 26%);
+    }
+
+    .glass {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(var(--blur)) saturate(160%);
+      -webkit-backdrop-filter: blur(var(--blur)) saturate(160%);
+      box-shadow: var(--shadow);
+    }
+
+    .hidden { display: none !important; }
+
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
       display: grid;
-      grid-template-columns: 260px 1fr;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .login-card {
+      width: min(420px, 100%);
+      padding: 28px;
+      border-radius: 28px;
+      text-align: center;
+    }
+
+    .login-card h1 {
+      margin: 12px 0 8px;
+      font-size: 2rem;
+    }
+
+    .login-card p { margin: 0 0 18px; color: var(--muted); }
+    .input {
+      width: 100%;
+      margin-bottom: 12px;
+      padding: 13px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      outline: none;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      color: white;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .layout {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 270px 1fr;
       min-height: 100vh;
     }
 
     .sidebar {
-      background: rgba(255,255,255,0.03);
-      border-right: 1px solid var(--border);
-      padding: 22px 16px;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      backdrop-filter: blur(12px);
+      margin: 16px 0 16px 16px;
+      border-radius: 28px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
     }
 
     .brand {
-      padding: 10px 12px 18px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 16px;
-    }
-
-    .brand h1 {
-      margin: 0;
-      font-size: 1.35rem;
-    }
-
-    .brand p {
-      margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .nav {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
+      align-items: center;
+      gap: 12px;
     }
 
-    .nav button {
-      width: 100%;
-      text-align: left;
-      background: transparent;
-      color: var(--text);
-      border: 1px solid transparent;
-      padding: 12px 14px;
+    .logo {
+      width: 50px;
+      height: 50px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      color: white;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+    }
+
+    .brand h1 { margin: 0; font-size: 1.05rem; }
+    .brand p { margin: 3px 0 0; color: var(--muted); font-size: 0.9rem; }
+
+    .side-nav { display: grid; gap: 10px; }
+
+    .side-btn, select, input[type="range"] {
+      font: inherit;
+    }
+
+    .side-btn, select {
+      border: 0;
       border-radius: 14px;
+      padding: 12px 14px;
+      color: var(--text);
+      background: rgba(255,255,255,0.08);
       cursor: pointer;
-      font-weight: 600;
       transition: 0.2s ease;
+      text-align: left;
     }
 
-    .nav button:hover,
-    .nav button.active {
+    .side-btn.active {
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       color: white;
-      box-shadow: var(--shadow);
     }
 
     .main {
-      padding: 24px;
+      padding: 16px 16px 40px 8px;
     }
 
     .topbar {
       display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-      align-items: center;
+      gap: 12px;
       justify-content: space-between;
-      margin-bottom: 22px;
+      align-items: center;
+      padding: 16px 18px;
+      border-radius: 24px;
+      margin-bottom: 16px;
     }
 
     .search {
       flex: 1;
-      min-width: 250px;
-      max-width: 600px;
-      position: relative;
-    }
-
-    .search input {
-      width: 100%;
-      padding: 14px 16px;
+      max-width: 560px;
+      padding: 12px 14px;
       border-radius: 14px;
       border: 1px solid var(--border);
-      background: var(--panel);
+      background: rgba(255,255,255,0.08);
       color: var(--text);
       outline: none;
-      box-shadow: var(--shadow);
     }
 
-    .pill {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px 14px;
-      box-shadow: var(--shadow);
+    .hero {
+      border-radius: 28px;
+      padding: 26px;
+      margin-bottom: 18px;
+      transition: 0.25s ease;
     }
 
-    .section {
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 4vw, 3.7rem);
+      line-height: 1.05;
+    }
+
+    .hero p { margin: 0; color: var(--muted); max-width: 65ch; }
+    .hero-actions { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 12px; }
+
+    .page {
       display: none;
-      animation: fade 0.2s ease;
+      animation: fade 0.25s ease;
     }
+    .page.active { display: block; }
 
-    .section.active { display: block; }
-
-    @keyframes fade {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 1.3rem;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 16px;
     }
 
     .card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 18px;
+      border-radius: 24px;
+      overflow: hidden;
+    }
+
+    .thumb {
+      height: 130px;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .card-body {
       padding: 18px;
-      box-shadow: var(--shadow);
-    }
-
-    .card-header {
-      display: flex;
-      align-items: center;
+      display: grid;
       gap: 10px;
-      margin-bottom: 10px;
     }
 
-    .icon {
-      width: 38px;
-      height: 38px;
+    .card h4, .card h3 { margin: 0; }
+    .card p { margin: 0; color: var(--muted); line-height: 1.5; }
+
+    .settings, .embed-box {
+      max-width: 640px;
+      padding: 20px;
+      border-radius: 24px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .embed-area {
+      width: 100%;
+      min-height: 240px;
+      border-radius: 18px;
+      border: 1px dashed var(--border);
+      background: rgba(255,255,255,0.06);
       display: grid;
       place-items: center;
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: white;
-      font-size: 1.1rem;
-      flex: 0 0 auto;
+      color: var(--muted);
+      padding: 16px;
+      text-align: center;
     }
 
-    h2, h3 { margin: 0; }
-    p { color: var(--muted); line-height: 1.5; }
+    .small { color: var(--muted); font-size: 0.92rem; }
 
-    .embed {
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      border: 0;
-      border-radius: 14px;
-      margin-top: 12px;
-      background: #000;
+    .footer {
+      margin-top: 14px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
     }
 
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    .announcement {
-      padding: 14px 16px;
-      border-left: 4px solid var(--accent);
-      background: rgba(108,140,255,0.08);
-      border-radius: 12px;
-      margin-bottom: 12px;
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .setting {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--border);
+    @keyframes float {
+      from { transform: translateY(0px) scale(1); }
+      to { transform: translateY(18px) scale(1.03); }
     }
 
-    .setting:last-child { border-bottom: 0; }
-
-    .switch {
-      position: relative;
-      width: 52px;
-      height: 30px;
-      display: inline-block;
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { margin: 16px; }
+      .main { padding: 0 16px 40px; }
     }
 
-    .switch input { opacity: 0; width: 0; height: 0; }
-
-    .slider {
-      position: absolute;
-      inset: 0;
-      cursor: pointer;
-      background: #3a4157;
-      border-radius: 999px;
-      transition: .2s;
-    }
-
-    .slider:before {
-      content: "";
-      position: absolute;
-      height: 22px;
-      width: 22px;
-      left: 4px;
-      top: 4px;
-      background: white;
-      border-radius: 50%;
-      transition: .2s;
-    }
-
-    input:checked + .slider {
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-    }
-
-    input:checked + .slider:before {
-      transform: translateX(22px);
-    }
-
-    .hide { display: none !important; }
-
-    .mobile-toggle {
-      display: none;
-      width: 100%;
-      border: 1px solid var(--border);
-      background: var(--panel);
-      color: var(--text);
-      padding: 12px 14px;
-      border-radius: 14px;
-      margin-bottom: 14px;
-    }
-
-    @media (max-width: 860px) {
-      .app { grid-template-columns: 1fr; }
-      .sidebar {
-        position: static;
-        height: auto;
-      }
-      .mobile-toggle { display: block; }
-      .nav { display: none; }
-      .nav.open { display: flex; }
+    @media (max-width: 600px) {
+      .topbar { flex-direction: column; align-items: stretch; }
+      .search { max-width: 100%; }
     }
   </style>
 </head>
-<body data-theme="dark">
+<body>
+  <div class="bg-orbs"></div>
 
-  <div class="app">
-    <aside class="sidebar">
+  <div id="loginScreen" class="login-screen">
+    <div class="login-card glass">
+      <div class="logo" style="margin:0 auto 8px;">D</div>
+      <h1>Dashboard</h1>
+      <p>Enter your portal</p>
+      <input id="username" class="input" type="text" placeholder="Username" />
+      <input id="password" class="input" type="password" placeholder="Password" />
+      <button class="btn" id="loginBtn">Login</button>
+      <div class="small" style="margin-top:10px;">Demo login only</div>
+    </div>
+  </div>
+
+  <div id="app" class="layout hidden">
+    <aside class="sidebar glass">
       <div class="brand">
-        <h1>My Dashboard</h1>
-        <p>Games • Proxies • Streams • News • Settings</p>
+        <div class="logo">D</div>
+        <div>
+          <h1>Dashboard</h1>
+          <p>PHHS</p>
+        </div>
       </div>
 
-      <button class="mobile-toggle" onclick="toggleMenu()">Menu</button>
-
-      <nav class="nav" id="nav">
-        <button class="tab active" onclick="showSection('games', this)">🎮 Games</button>
-        <button class="tab" onclick="showSection('proxies', this)">🛡️ Proxies</button>
-        <button class="tab" onclick="showSection('streams', this)">📺 Streams</button>
-        <button class="tab" onclick="showSection('announcements', this)">📢 Announcements</button>
-        <button class="tab" onclick="showSection('settings', this)">⚙️ Settings</button>
-      </nav>
+      <div class="side-nav">
+        <button class="side-btn active" data-page="games"><i class="fa-solid fa-gamepad"></i> Games</button>
+        <button class="side-btn" data-page="proxies"><i class="fa-solid fa-network-wired"></i> Proxies</button>
+        <button class="side-btn" data-page="streams"><i class="fa-solid fa-tv"></i> Streams</button>
+        <button class="side-btn" data-page="settings"><i class="fa-solid fa-gear"></i> Settings</button>
+      </div>
     </aside>
 
     <main class="main">
-      <div class="topbar">
-        <div class="search">
-          <input type="text" id="searchBox" placeholder="Search games, streams, or announcements..." oninput="searchContent()">
-        </div>
-
-        <div class="pill">
-          <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
-            <span>🌙 Dark Mode</span>
-            <label class="switch">
-              <input type="checkbox" checked onchange="toggleTheme(this.checked)">
-              <span class="slider"></span>
-            </label>
-          </label>
-        </div>
+      <div class="topbar glass">
+        <input id="search" class="search" type="text" placeholder="Search content..." />
+        <select id="themeSelect">
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+          <option value="neon">Neon</option>
+        </select>
       </div>
 
-      <!-- GAMES -->
-      <section id="games" class="section active">
-        <div class="card">
-          <div class="card-header">
-            <div class="icon">🎮</div>
-            <div>
-              <h2>Games</h2>
-              <p>Embedded games and quick links.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid" style="margin-top:16px;">
-          <div class="card game-item">
-            <h3>Game 1</h3>
-            <p>Replace this with your game embed.</p>
-            <iframe class="embed" src="https://example.com" title="Game 1"></iframe>
-          </div>
-
-          <div class="card game-item">
-            <h3>Game 2</h3>
-            <p>Replace this with your game embed.</p>
-            <iframe class="embed" src="https://example.com" title="Game 2"></iframe>
-          </div>
-
-          <div class="card game-item">
-            <h3>Game 3</h3>
-            <p>Replace this with your game embed.</p>
-            <iframe class="embed" src="https://example.com" title="Game 3"></iframe>
-          </div>
+      <section class="hero glass" id="heroCard">
+        <h2>Modern green and yellow dashboard.</h2>
+        <p>Designed for a futuristic, polished website with games, proxies, streams, and settings.</p>
+        <div class="hero-actions">
+          <button class="btn" onclick="showPage('games')">Open Games</button>
+          <button class="btn" onclick="showPage('settings')">Customize</button>
         </div>
       </section>
 
-      <!-- PROXIES -->
-      <section id="proxies" class="section">
-        <div class="card">
-          <div class="card-header">
-            <div class="icon">🛡️</div>
-            <div>
-              <h2>Proxies</h2>
-              <p>Add your proxy links here.</p>
+      <section id="games" class="page active">
+        <h3 class="section-title">Games</h3>
+        <div class="grid">
+          <article class="card glass searchable">
+            <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80')"></div>
+            <div class="card-body">
+              <h4>Arcade Hub</h4>
+              <p>Casual games and quick-play fun.</p>
+              <button class="btn">Play</button>
             </div>
-          </div>
-          <ul>
-            <li><a href="#">Proxy Link 1</a></li>
-            <li><a href="#">Proxy Link 2</a></li>
-            <li><a href="#">Proxy Link 3</a></li>
-          </ul>
+          </article>
+          <article class="card glass searchable">
+            <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80')"></div>
+            <div class="card-body">
+              <h4>Racing Zone</h4>
+              <p>Speed-focused games with a smooth vibe.</p>
+              <button class="btn">Play</button>
+            </div>
+          </article>
         </div>
       </section>
 
-      <!-- STREAMS -->
-      <section id="streams" class="section">
-        <div class="card">
-          <div class="card-header">
-            <div class="icon">📺</div>
-            <div>
-              <h2>Streams</h2>
-              <p>Embedded streams and videos.</p>
+      <section id="proxies" class="page">
+        <h3 class="section-title">Proxies</h3>
+        <div class="grid">
+          <article class="card glass searchable">
+            <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80')"></div>
+            <div class="card-body">
+              <h4>Proxy Hub</h4>
+              <p>Add safe utilities and helpful links here.</p>
+              <button class="btn">Open</button>
             </div>
-          </div>
-        </div>
-
-        <div class="grid" style="margin-top:16px;">
-          <div class="card stream-item">
-            <h3>Stream 1</h3>
-            <p>Embedded video player.</p>
-            <iframe class="embed" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Stream 1" allowfullscreen></iframe>
-          </div>
-
-          <div class="card stream-item">
-            <h3>Stream 2</h3>
-            <p>Embedded video player.</p>
-            <iframe class="embed" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Stream 2" allowfullscreen></iframe>
-          </div>
+          </article>
         </div>
       </section>
 
-      <!-- ANNOUNCEMENTS -->
-      <section id="announcements" class="section">
-        <div class="card">
-          <div class="card-header">
-            <div class="icon">📢</div>
-            <div>
-              <h2>Announcements</h2>
-              <p>Latest updates and notices.</p>
+      <section id="streams" class="page">
+        <h3 class="section-title">Streams</h3>
+        <div class="grid">
+          <article class="card glass searchable">
+            <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80')"></div>
+            <div class="card-body">
+              <h4>Live Now</h4>
+              <p>Embed your live stream here.</p>
+              <button class="btn">Open Stream</button>
             </div>
-          </div>
-
-          <div class="announcement news-item">
-            <strong>Update:</strong> New dashboard design added.
-          </div>
-          <div class="announcement news-item">
-            <strong>Notice:</strong> You can edit all links and embeds.
-          </div>
-          <div class="announcement news-item">
-            <strong>Coming Soon:</strong> More games, streams, and features.
-          </div>
+          </article>
         </div>
       </section>
 
-      <!-- SETTINGS -->
-      <section id="settings" class="section">
-        <div class="card">
-          <div class="card-header">
-            <div class="icon">⚙️</div>
-            <div>
-              <h2>Settings</h2>
-              <p>Customize your dashboard.</p>
-            </div>
+      <section id="settings" class="page">
+        <h3 class="section-title">Settings</h3>
+        <div class="settings glass">
+          <div>
+            <label for="glassRange">Liquid Glass Blur</label>
+            <input id="glassRange" type="range" min="10" max="40" value="22" />
           </div>
-
-          <div class="setting">
-            <div>
-              <strong>Dark / Light Mode</strong>
-              <p>Switch the theme of the site.</p>
-            </div>
-            <label class="switch">
-              <input type="checkbox" checked onchange="toggleTheme(this.checked)">
-              <span class="slider"></span>
-            </label>
+          <div>
+            <label for="themeSelect2">Theme</label>
+            <select id="themeSelect2">
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+              <option value="neon">Neon</option>
+            </select>
           </div>
-
-          <div class="setting">
-            <div>
-              <strong>Animations</strong>
-              <p>Smooth transitions and fades.</p>
-            </div>
-            <label class="switch">
-              <input type="checkbox" checked>
-              <span class="slider"></span>
-            </label>
+          <div class="embed-box glass">
+            <strong>Embed Slot</strong>
+            <div class="embed-area">Place a game embed, stream iframe, or custom widget here.</div>
           </div>
-
-          <div class="setting">
-            <div>
-              <strong>Compact Mode</strong>
-              <p>Make cards smaller and tighter.</p>
-            </div>
-            <label class="switch">
-              <input type="checkbox" onchange="document.body.classList.toggle('compact', this.checked)">
-              <span class="slider"></span>
-            </label>
-          </div>
+          <button id="resetBtn" class="btn">Reset Settings</button>
         </div>
       </section>
+
+      <div class="footer">PHHS • 2026</div>
     </main>
   </div>
 
   <script>
-    function showSection(id, btn) {
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      btn.classList.add('active');
-      if (window.innerWidth <= 860) document.getElementById('nav').classList.remove('open');
-      searchContent();
+    const loginScreen = document.getElementById("loginScreen");
+    const app = document.getElementById("app");
+    const loginBtn = document.getElementById("loginBtn");
+    const navButtons = document.querySelectorAll(".side-btn");
+    const pages = document.querySelectorAll(".page");
+    const search = document.getElementById("search");
+    const themeSelect = document.getElementById("themeSelect");
+    const themeSelect2 = document.getElementById("themeSelect2");
+    const glassRange = document.getElementById("glassRange");
+    const resetBtn = document.getElementById("resetBtn");
+
+    loginBtn.addEventListener("click", () => {
+      loginScreen.classList.add("hidden");
+      app.classList.remove("hidden");
+    });
+
+    function showPage(id) {
+      pages.forEach(page => page.classList.toggle("active", page.id === id));
+      navButtons.forEach(btn => btn.classList.toggle("active", btn.dataset.page === id));
     }
 
-    function toggleTheme(isDark) {
-      document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    navButtons.forEach(btn => btn.addEventListener("click", () => showPage(btn.dataset.page)));
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem("theme", theme);
+      themeSelect.value = theme;
+      themeSelect2.value = theme;
     }
 
-    function toggleMenu() {
-      document.getElementById('nav').classList.toggle('open');
+    function setGlass(value) {
+      document.documentElement.style.setProperty("--blur", `${value}px`);
+      localStorage.setItem("glass", value);
+      glassRange.value = value;
     }
 
-    function searchContent() {
-      const q = document.getElementById('searchBox').value.toLowerCase().trim();
-      const items = document.querySelectorAll('.game-item, .stream-item, .news-item, .card li, .card .announcement');
-
-      items.forEach(item => {
-        const text = item.textContent.toLowerCase();
-        item.classList.toggle('hide', q && !text.includes(q));
+    function filterCards(query) {
+      const cards = document.querySelectorAll(".searchable");
+      query = query.toLowerCase();
+      cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+        card.style.display = text.includes(query) ? "" : "none";
       });
     }
-  </script>
 
+    search.addEventListener("input", e => filterCards(e.target.value));
+    themeSelect.addEventListener("change", e => setTheme(e.target.value));
+    themeSelect2.addEventListener("change", e => setTheme(e.target.value));
+    glassRange.addEventListener("input", e => setGlass(e.target.value));
+
+    resetBtn.addEventListener("click", () => {
+      setTheme("dark");
+      setGlass(22);
+      search.value = "";
+      filterCards("");
+      localStorage.removeItem("theme");
+      localStorage.removeItem("glass");
+    });
+
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    const savedGlass = localStorage.getItem("glass") || 22;
+    setTheme(savedTheme);
+    setGlass(savedGlass);
+    showPage("games");
+  </script>
 </body>
 </html>
